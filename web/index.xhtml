@@ -1,0 +1,54 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <body>
+
+        <ui:composition template="./mainTemplate.xhtml">
+
+            <ui:define name="content">
+
+                <h2>Wettkampf-Übersicht</h2>
+
+                <h:form>
+                    <h:dataTable value="${overviewBean.tournaments}" var="tourn" 
+                                 styleClass="table" headerClass="table-header" rowClasses="table-rows" 
+                                 cellpadding="10">
+
+                        <h:column>
+                            <f:facet name="header">Name</f:facet> 
+                            ${tourn.name}
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header">Ort</f:facet>
+                            ${tourn.location}
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header">Datum</f:facet>
+                            ${tourn.date}
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header">Gebühr</f:facet>
+                            ${tourn.fee}
+                        </h:column>
+
+                        <h:column>
+                            <h:commandButton action="${overviewBean.viewTournament(tourn)}" value="Ansehen" />
+                        </h:column>
+
+                    </h:dataTable>
+                </h:form>
+
+
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

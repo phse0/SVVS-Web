@@ -1,0 +1,78 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <body>
+
+        <ui:composition template="./mainTemplate.xhtml">
+
+            <ui:define name="content">
+
+                <h2>Mannschaften</h2>
+
+                <h:dataTable value="${overviewBean.teams}" var="team" 
+                             styleClass="table" headerClass="table-header" rowClasses="table-rows" 
+                             cellpadding="10">
+
+                    <h:column>
+                        <f:facet name="header">Name</f:facet>
+                        ${team.name}
+                    </h:column>
+
+                    <h:column>
+                        <f:facet name="header">Liga</f:facet>
+                        ${team.league.name}
+                    </h:column>
+
+                </h:dataTable>
+
+                <br/><br/>
+
+                <h2>Matches</h2>
+                <h:dataTable value="${overviewBean.matches}" var="match" 
+                             styleClass="table" headerClass="table-header" rowClasses="table-rows" 
+                             cellpadding="10">
+
+                    <h:column>
+                        <f:facet name="header">Team 1</f:facet>
+                        ${match.team1.name}
+                    </h:column>
+                    
+                    <h:column>
+                        <f:facet name="header">Team 2</f:facet>
+                        ${match.team2.name}
+                    </h:column>
+                    
+                    <h:column>
+                        <f:facet name="header">Ergebnis</f:facet>
+                        ${match.goalsTeam1} : ${match.goalsTeam2}
+                    </h:column>
+                    
+                    <h:column>
+                        <f:facet name="header">Ort</f:facet>
+                        ${match.location}
+                    </h:column>
+                    
+                    <h:column>
+                        <f:facet name="header">Datum</f:facet>
+                        ${match.date}
+                    </h:column>
+
+                </h:dataTable>
+
+
+                <br/><br/>
+
+                <h:form>
+                    <h:commandButton action="${overviewBean.returnToOverview()}" value="Zurück zur Übersicht" />
+                </h:form>
+
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>
