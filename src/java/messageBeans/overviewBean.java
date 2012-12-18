@@ -14,6 +14,8 @@ import data.DTOs.IPersonDTO;
 import data.DTOs.ISportsmanTrainingTeamDTO;
 import data.DTOs.ITeamDTO;
 import data.DTOs.ITournamentDTO;
+import java.io.Serializable;
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.sql.Date;
 import java.util.LinkedList;
@@ -30,7 +32,7 @@ import javax.faces.bean.SessionScoped;
  */
 @ManagedBean
 @SessionScoped
-public class overviewBean {
+public class overviewBean implements Serializable {
 
     /**
      * Creates a new instance of overviewBean
@@ -47,12 +49,13 @@ public class overviewBean {
     private ITournamentDTO actualTournament;
     
     
-    private ITeamDTO team1;
-    private ITeamDTO team2;
+    private String team1;
+    private String team2;
     private String resultTeam1;
     private String resultTeam2;
     private String location;
     private String date;
+    private boolean finished;
 
     public overviewBean() {
     }
@@ -73,6 +76,7 @@ public class overviewBean {
         try {
             this.tournamentID = tournament.getId();
             this.actualTournament = tournController.loadTournamentDTO(tournamentID);
+            this.finished = actualTournament.isFinished();
             return "tournamentOverview";
         } catch (RemoteException ex) {
             Logger.getLogger(overviewBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -92,6 +96,20 @@ public class overviewBean {
 
         return null;
     }
+    
+    public List<String> getTeamNames() {
+        List<String> names = new LinkedList<String>();
+        
+        for(ITeamDTO t : getTeams()) {
+            try {
+                names.add(t.getName());
+            } catch (RemoteException ex) {
+                Logger.getLogger(overviewBean.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
+        return names;
+    }
 
     public List<String> loadPlayersOfTeam(ITeamDTO team) {
         checkController();
@@ -99,8 +117,8 @@ public class overviewBean {
         List<String> sportsman = new LinkedList<String>();
 
         try {
-            List<ISportsmanTrainingTeamDTO> sportsmanTemp = teamController.loadAssignedPlayersOfTeam(actualTournament, team);
-
+            List<ISportsmanTrainingTeamDTO> sportsmanTemp = teamController.loadAssignedPlayersOfTeamID(actualTournament.getId(), team.getId());
+            
             for (ISportsmanTrainingTeamDTO t : sportsmanTemp) {
                 IPersonDTO p = t.getSportsman().getPerson();
                 String returnString = p.getFirstname() + " " + p.getLastname();
@@ -137,12 +155,25 @@ public class overviewBean {
         
         try {
             tournEditcontroller.AddMatch(actualTournament.getId(), location, Date.valueOf(date), 
-                    team1.getName(), team2.getName(), Integer.parseInt(resultTeam1), Integer.parseInt(resultTeam2));
+                    team1, team2, Integer.parseInt(resultTeam1), Integer.parseInt(resultTeam2));
         } catch (RemoteException ex) {
             Logger.getLogger(overviewBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        return "index";
+        return "tournamentOverview";
+    }
+    
+    public String saveFinished() {
+        
+        try {
+            tournEditcontroller.EditTournament(actualTournament.getId(), actualTournament.getName(), 
+                    actualTournament.getLocation(), Date.valueOf(actualTournament.getDate()), 
+                    BigDecimal.valueOf(actualTournament.getFee()), finished, getTeamNames());        
+        } catch (RemoteException ex) {
+            Logger.getLogger(overviewBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return "tournamentOverview";
     }
 
     public String returnToOverview() {
@@ -175,19 +206,19 @@ public class overviewBean {
         }
     }
 
-    public ITeamDTO getTeam1() {
+    public String getTeam1() {
         return team1;
     }
 
-    public void setTeam1(ITeamDTO team1) {
+    public void setTeam1(String team1) {
         this.team1 = team1;
     }
 
-    public ITeamDTO getTeam2() {
+    public String getTeam2() {
         return team2;
     }
 
-    public void setTeam2(ITeamDTO team2) {
+    public void setTeam2(String team2) {
         this.team2 = team2;
     }
 
@@ -222,5 +253,22 @@ public class overviewBean {
     public void setDate(String date) {
         this.date = date;
     }
+
+    public boolean isFinished() {
+        return finished;
+    }
+
+    public void setFinished(boolean finished) {
+        this.finished = finished;
+    }
+
+    public ITournamentDTO getActualTournament() {
+        return actualTournament;
+    }
+
+    public void setActualTournament(ITournamentDTO actualTournament) {
+        this.actualTournament = actualTournament;
+    }
+    
     
 }

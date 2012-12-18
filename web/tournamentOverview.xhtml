@@ -42,7 +42,7 @@
                     ${player}
                 </h:column>
             </h:dataTable>
-        </h:column>-->
+        </h:column> -->
 
                 </h:dataTable>
 
@@ -82,38 +82,62 @@
 
                 <br/><br/>
 
-                <c:if test="${authentificationBean.loggedIn}">
+                <c:if test="${authentificationBean.loggedIn == true and authentificationBean.canEditTournament(overviewBean.actualTournament)}">
                     <h2>Match hinzufügen</h2>
+                    <table>
+                        <h:form>
+                            <tr>
+                                <td>Team 1:</td>
+                                <td>
+                                    <h:selectOneMenu value="${overviewBean.team1}">
+                                        <f:selectItems value="${overviewBean.teamNames}"/>
+                                    </h:selectOneMenu>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>Team 2:</td>
+                                <td>
+                                    <h:selectOneMenu value="${overviewBean.team2}">
+                                        <f:selectItems value="${overviewBean.teamNames}"/>
+                                    </h:selectOneMenu>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>Ort:</td>
+                                <td><h:inputText value="${overviewBean.location}" /></td>
+                            </tr>
+
+                            <tr>
+                                <td>Datum:</td>
+                                <td><h:inputText value="${overviewBean.date}" /></td>
+                            </tr>
+
+                            <tr>
+                                <td>Ergebnis:</td> 
+                                <td>
+                                    <h:inputText size="4" value="${overviewBean.resultTeam1}" style="text-align: right"/>
+                                    : 
+                                    <h:inputText size="4" value="${overviewBean.resultTeam2}" />
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td></td>
+                                <td><h:commandButton value="Match speichern" action="${overviewBean.saveMatch()}" /></td>
+                            </tr>
+                        </h:form>
+                    </table>
+
+
+                    <h2>Wettkampfeinstellungen</h2>
+
                     <h:form>
-                        Team 1:
-                        <h:selectOneMenu value="${overviewBean.team1}">
-                            <f:selectItems value="${overviewBean.teams}" var="i" itemLabel="${i.name}"/>
-                        </h:selectOneMenu>
-
-                        <br />
-
-                        Team 2:
-                        <h:selectOneMenu value="${overviewBean.team2}">
-                            <f:selectItems value="${overviewBean.teams}" var="j" itemLabel="${j.name}"/>
-                        </h:selectOneMenu>
-
-                        <br />
-
-                        Ort:
-                        <h:inputText value="${overviewBean.location}" />
-
-                        <br />
-
-                        Datum:
-                        <h:inputText value="${overviewBean.date}" />
-
-                        <br />
-
-                        Ergebnis: 
-                        <h:inputText size="4" value="${overviewBean.resultTeam1}" style="text-align: right"/>
-                        : 
-                        <h:inputText size="4" value="${overviewBean.resultTeam2}" />
+                        <h:selectBooleanCheckbox value="${overviewBean.finished}"/>Wettkampf beendet<br/>
+                        <h:commandButton value="Speichern" action="${overviewBean.saveFinished()}"/>
                     </h:form>
+
                 </c:if>
             </ui:define>
 
