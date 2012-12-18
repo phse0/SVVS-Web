@@ -7,6 +7,8 @@ package messageBeans;
 import business.ControllerFactory3Remote;
 import business.ControllerFactoryRemote;
 import business.controller.person.IAuthentificationController;
+import business.controller.person.IPersonController;
+import data.DTOs.IPersonDTO;
 import java.rmi.RemoteException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -28,9 +30,11 @@ public class authentificationBean {
      */
     @EJB(name = "_cFactory1")
     private ControllerFactoryRemote cFactory;
-    private IAuthentificationController controller;
+    private IAuthentificationController authController;
+    private IPersonController personController;
 
     private boolean loggedIn = false;
+    private IPersonDTO loggedPerson;
     private String username;
     private String password;
     
@@ -40,10 +44,13 @@ public class authentificationBean {
     public String login() {
         checkController();
         try {
-            Long right = controller.Authenticate(username, password);
+            Long right = authController.Authenticate(username, password);
+            
+            loggedPerson = personController.loadPersonWithUsername(username);
             
             if(right > 0) {
                 loggedIn = true;
+                
             }
             
         } catch (RemoteException ex) {
@@ -55,15 +62,24 @@ public class authentificationBean {
     
     public String logout() {
         loggedIn = false;
+        loggedPerson = null;
         return "index";
     }
 
     private void checkController() {
-        if (controller == null) {
+        if (authController == null) {
             try {
-                controller = cFactory.getAuthentificationController();
+                authController = cFactory.getAuthentificationController();
             } catch (RemoteException ex) {
                 Logger.getLogger(overviewBean.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
+        if(personController == null) {
+            try {
+                personController = cFactory.getPersonController();
+            } catch (RemoteException ex) {
+                Logger.getLogger(authentificationBean.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
@@ -87,8 +103,15 @@ public class authentificationBean {
     public boolean isLoggedIn() {
         return loggedIn;
     }
-    
-    
-    
+
+    public String getLoggedPersonName() {
+        try {
+            return loggedPerson.getLastname() + " " + loggedPerson.getFirstname();
+        } catch (RemoteException ex) {
+            Logger.getLogger(authentificationBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return null;
+    }    
     
 }

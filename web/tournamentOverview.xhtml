@@ -3,13 +3,22 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core">
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
 
     <body>
 
         <ui:composition template="./mainTemplate.xhtml">
 
             <ui:define name="content">
+
+                <br/>
+
+                <h:form>
+                    <h:commandButton action="${overviewBean.returnToOverview()}" value="Zurück zur Übersicht" />
+                </h:form>
+
+                <br/>
 
                 <h2>Mannschaften</h2>
 
@@ -27,6 +36,14 @@
                         ${team.league.name}
                     </h:column>
 
+                    <!--<h:column>
+                        <h:dataTable value="${overviewBean.loadPlayersOfTeam(team)}" var="player">
+                            <h:column>
+                    ${player}
+                </h:column>
+            </h:dataTable>
+        </h:column>-->
+
                 </h:dataTable>
 
                 <br/><br/>
@@ -40,22 +57,22 @@
                         <f:facet name="header">Team 1</f:facet>
                         ${match.team1.name}
                     </h:column>
-                    
+
                     <h:column>
                         <f:facet name="header">Team 2</f:facet>
                         ${match.team2.name}
                     </h:column>
-                    
+
                     <h:column>
                         <f:facet name="header">Ergebnis</f:facet>
                         ${match.goalsTeam1} : ${match.goalsTeam2}
                     </h:column>
-                    
+
                     <h:column>
                         <f:facet name="header">Ort</f:facet>
                         ${match.location}
                     </h:column>
-                    
+
                     <h:column>
                         <f:facet name="header">Datum</f:facet>
                         ${match.date}
@@ -63,13 +80,41 @@
 
                 </h:dataTable>
 
-
                 <br/><br/>
 
-                <h:form>
-                    <h:commandButton action="${overviewBean.returnToOverview()}" value="Zurück zur Übersicht" />
-                </h:form>
+                <c:if test="${authentificationBean.loggedIn}">
+                    <h2>Match hinzufügen</h2>
+                    <h:form>
+                        Team 1:
+                        <h:selectOneMenu value="${overviewBean.team1}">
+                            <f:selectItems value="${overviewBean.teams}" var="i" itemLabel="${i.name}"/>
+                        </h:selectOneMenu>
 
+                        <br />
+
+                        Team 2:
+                        <h:selectOneMenu value="${overviewBean.team2}">
+                            <f:selectItems value="${overviewBean.teams}" var="j" itemLabel="${j.name}"/>
+                        </h:selectOneMenu>
+
+                        <br />
+
+                        Ort:
+                        <h:inputText value="${overviewBean.location}" />
+
+                        <br />
+
+                        Datum:
+                        <h:inputText value="${overviewBean.date}" />
+
+                        <br />
+
+                        Ergebnis: 
+                        <h:inputText size="4" value="${overviewBean.resultTeam1}" style="text-align: right"/>
+                        : 
+                        <h:inputText size="4" value="${overviewBean.resultTeam2}" />
+                    </h:form>
+                </c:if>
             </ui:define>
 
         </ui:composition>
